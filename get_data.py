@@ -4,7 +4,10 @@ import json
 
 class HeadHunter:
     def __init__(self):
-        self.companies = ["Самокат", "Газпром", "Магнит", "Эльдорадо", "DNS", "development", "Yandex", "Вкусно и точка", "Дворники", "Больница"]
+        self.companies = ["Самокат", "Газпром", "Магнит",
+                          "Эльдорадо", "DNS", "development",
+                          "Yandex", "Вкусно и точка", "Клининг",
+                          "Больница", "Delivery", "AB Inbev", "Талина"]
         self.employees = "https://api.hh.ru/employers"
         self.vacancies = "https://api.hh.ru/vacancies"
 
@@ -66,16 +69,6 @@ class HeadHunter:
                     except:
                         salary = "Нет данных"
 
-                    # try:
-                    #     salary = f"от {vacation['salary']['from']} до {vacation['salary']['to']}"
-                    # except TypeError:
-                    #     if vacation['salary']['to'] is None:
-                    #         salary = f"от {vacation['salary']['from']} {vacation['salary']['currency']}"
-                    #     elif vacation['salary']['from'] is None:
-                    #         salary = f"до {vacation['salary']['to']} {vacation['salary']['currency']}"
-                    # except KeyError:
-                    #     salary = "Нет данных"
-
                     try:
                         address = f'{vacation["address"]["city"]}, {vacation["address"]["street"]}'
                     except TypeError:
@@ -99,21 +92,18 @@ class HeadHunter:
                             "address": address
                         }
                     )
-            all_the_vacancies.append({f"{name}": vacancies_list})
+            if {f"{name}": vacancies_list} not in all_the_vacancies:
+                all_the_vacancies.append({f"{name}": vacancies_list})
 
-        # print(json.dumps(all_the_vacancies, indent=4, ensure_ascii=False))
         return all_the_vacancies
+
+    def get_info(self):
+        for company in self.get_data_dict():
+            print(company)
 
     def write_to_json(self):
         data = self.get_data_dict()
         with open("data_test.txt", "w", encoding="utf-8") as test_file:
             to_write = json.dumps(data, indent=4, ensure_ascii=False)
             test_file.write(to_write)
-
-
-hh = HeadHunter()
-hh.write_to_json()
-# hh.write_to_json()
-
-
 
