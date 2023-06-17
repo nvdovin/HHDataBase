@@ -5,7 +5,7 @@ CREATE TABLE total_database (
     vacation_name text,
     salary_from int,
     salary_to int,
-    salary_currency varchar(5),
+    salary_currency varchar(3),
     professional_roles varchar(64),
     experience varchar(32),
     employment varchar(32),
@@ -56,4 +56,4 @@ WHERE salary_to > (
 SELECT company_name, vacation_name, salary_to, salary_currency, url
 FROM total_database
 WHERE vacation_name
-LIKE 'разраб%'
+LIKE '%разраб%'
