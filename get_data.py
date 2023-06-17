@@ -1,13 +1,12 @@
 import requests
 import json
+import utils as u
 
 
 class HeadHunter:
     def __init__(self):
-        self.companies = ["Самокат", "Газпром", "Магнит",
-                          "Эльдорадо", "DNS", "development",
-                          "Yandex", "Вкусно и точка", "Клининг",
-                          "Больница", "Delivery", "AB Inbev", "Талина"]
+        self.companies = u.research_list
+
         self.employees = "https://api.hh.ru/employers"
         self.vacancies = "https://api.hh.ru/vacancies"
 
@@ -31,13 +30,10 @@ class HeadHunter:
 
         return employers_list
 
-    def get_vacations_list(self, id: str, response):
+    def get_vacations_list(self, company_id: str):
         request = requests.get(
             self.vacancies,
-            params={
-                "employer_id": id,
-                "text": response
-                    }
+            params={"employer_id": company_id}
         )
         return request.json()
 
@@ -49,32 +45,37 @@ class HeadHunter:
 
         for company in self.companies:
             data_dict = self.get_data_employees(company)
-
             for item in data_dict:
                 name = item["name"]
-                id = item["id"]
-                vacancies_data = self.get_vacations_list(id, name)
+                company_id = item["id"]
+
+                vacancies_data = self.get_vacations_list(company_id)
                 vacancies_list = []
 
                 for vacation in vacancies_data["items"]:
                     vacation_name = f"{vacation['name']}"
 
                     try:
-                        if vacation["salary"]["from"] is not None and vacation["salary"]["to"] is not None:
-                            salary = f"от {vacation['salary']['from']} до {vacation['salary']['to']} {vacation['salary']['currency']}"
-                        elif vacation['salary']['to'] is None:
-                            salary = f"от {vacation['salary']['from']} {vacation['salary']['currency']}"
-                        elif vacation['salary']['from'] is None:
-                            salary = f"до {vacation['salary']['to']} {vacation['salary']['currency']}"
-                    except:
-                        salary = "Нет данных"
+                        salary_from = vacation["salary"]["from"]
+                    except TypeError:
+                        salary_from = None
+
+                    try:
+                        salary_currency = vacation["salary"]["currency"]
+                    except TypeError:
+                        salary_currency = None
+
+                    try:
+                        salary_to = vacation['salary']['to']
+                    except TypeError:
+                        salary_to = None
 
                     try:
                         address = f'{vacation["address"]["city"]}, {vacation["address"]["street"]}'
                     except TypeError:
-                        city = "Нет данных"
+                        address = None
 
-                    url = f'{vacation["url"]}'
+                    url = f'{vacation["alternate_url"]}'
                     snippet = f'{vacation["snippet"]["requirement"]}'
                     professional_roles = f'{vacation["professional_roles"][0]["name"]}'
                     experience = f'{vacation["experience"]["name"]}'
@@ -83,7 +84,9 @@ class HeadHunter:
                     vacancies_list.append(
                         {
                             "vacation_name": vacation_name,
-                            "salary": salary,
+                            "salary_from": salary_from,
+                            "salary_to": salary_to,
+                            "salary_currency": salary_currency,
                             "professional_roles": professional_roles,
                             "experience": experience,
                             "employment": employment,
@@ -92,18 +95,24 @@ class HeadHunter:
                             "address": address
                         }
                     )
-            if {f"{name}": vacancies_list} not in all_the_vacancies:
-                all_the_vacancies.append({f"{name}": vacancies_list})
+            dict_to_write = {"name": f"{name}", "vacancies": vacancies_list}
+            if dict_to_write not in all_the_vacancies:
+                all_the_vacancies.append(dict_to_write)
 
         return all_the_vacancies
+
+    # Ниже некоторые тестовые функции, которые могут пригодиться в будущем.
 
     def get_info(self):
         for company in self.get_data_dict():
             print(company)
 
     def write_to_json(self):
-        data = self.get_data_dict()
+        data = self.get_vacations_list("5122356")
         with open("data_test.txt", "w", encoding="utf-8") as test_file:
             to_write = json.dumps(data, indent=4, ensure_ascii=False)
             test_file.write(to_write)
 
+
+hh = HeadHunter()
+hh.write_to_json()
