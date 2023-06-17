@@ -201,7 +201,7 @@ class DBManager(Database):
                 SELECT company_name, vacation_name, salary_to, salary_currency, url 
                 FROM total_database
                 WHERE vacation_name 
-                LIKE '{word.title()}%' """)
+                LIKE '%{word.title()}%' """)
             data = cur.fetchall()
         if len(data) != 0:
             self.printer(data)
