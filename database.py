@@ -176,8 +176,7 @@ class DBManager(Database):
             cur.execute(f"""
                 SELECT AVG(salary_from + salary_to)
                 AS average
-                FROM total_database
-                WHERE salary_currency='RUR'; """)
+                FROM total_database; """)
             data = cur.fetchall()
         self.printer(data)
 
