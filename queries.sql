@@ -56,4 +56,7 @@ WHERE salary_to > (
 SELECT company_name, vacation_name, salary_to, salary_currency, url
 FROM total_database
 WHERE vacation_name
-LIKE '%разраб%'
+LIKE '%python%'
+
+-- Выше в кавычках, между знаками % пример слова для поиска.
+-- В программе оно реализовано через input()
