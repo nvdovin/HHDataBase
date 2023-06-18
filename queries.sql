@@ -1,6 +1,7 @@
 -- Создание таблицы
 
 CREATE TABLE total_database (
+    company_id int,
     company_name text,
     vacation_name text,
     salary_from int,
@@ -21,9 +22,9 @@ CREATE TABLE total_database (
 
 -- Получает список всех компаний и количество вакансий у каждой компании."""
 
-SELECT DISTINCT(company_name), COUNT(*)
+SELECT DISTINCT(company_name), COUNT(*), company_id
 FROM total_database
-GROUP BY company_name
+GROUP BY (company_name, company_id)
 ORDER BY company_name;
 
 
@@ -60,3 +61,16 @@ LIKE '%python%'
 
 -- Выше в кавычках, между знаками % пример слова для поиска.
 -- В программе оно реализовано через input()
+
+
+--Для получения списка вакансий по ID
+
+SELECT company_id, company_name, vacation_name, salary_to, salary_currency, url
+FROM total_database
+WHERE company_id=5
+
+
+--Получаем всю таблицу целиком
+
+SELECT *
+FROM total_database
